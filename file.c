@@ -268,9 +268,20 @@ int kibosh_release(const char *path UNUSED, struct fuse_file_info *info)
 int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t offset,
                  struct fuse_file_info *info)
 {
-    int ret;
+    int ret, fault;
     uint32_t uid UNUSED;
     struct kibosh_file *file = (struct kibosh_file*)(uintptr_t)info->fh;
+    struct kibosh_fs *fs = fuse_get_context()->private_data;
+
+    if (file->type == KIBOSH_FILE_TYPE_NORMAL) {
+        fault = kibosh_fs_check_write_fault(fs, file->path);
+        if (fault) {
+            DEBUG("kibosh_write(file->path=%s, size=%zd, offset=%" PRId64", uid=%"PRId32") "
+                          "=  %d (%s)\n", file->path, size, (int64_t)offset, uid, fault,
+                          safe_strerror(fault));
+            return -fault;
+        }
+    }
 
     uid = fuse_get_context()->uid;
     ret = pwrite(file->fd, buf, size, offset);
