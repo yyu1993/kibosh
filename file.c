@@ -18,6 +18,7 @@
 #include "fs.h"
 #include "log.h"
 #include "util.h"
+#include "fault.h"
 
 #include <ctype.h>
 #include <dirent.h>
@@ -34,6 +35,7 @@
 #include <sys/types.h>
 #include <sys/xattr.h>
 #include <unistd.h>
+#include <math.h>
 
 static struct kibosh_file *kibosh_file_alloc(enum kibosh_file_type type,
                                              const char *path)
@@ -225,6 +227,39 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
     } else {
         if (file->type == KIBOSH_FILE_TYPE_NORMAL) {
             fault = kibosh_fs_check_read_fault(fs, file->path);
+
+            // inject read_corrupt fault
+            if (fault >= READ_CORRUPT_BASE) {
+                double fraction = 1.0;
+                char *file_type = NULL;
+                struct kibosh_fault_base **iter;
+                struct kibosh_fault_read_corrupt *corrupt_fault;
+                for (iter = fs->faults->list; *iter; iter++) {
+                    if (strcmp((*iter)->type, KIBOSH_FAULT_TYPE_READ_CORRUPT) == 0) {
+                        corrupt_fault = (struct kibosh_fault_read_corrupt*)(*iter);
+                        fraction = corrupt_fault->fraction;
+                        file_type = corrupt_fault->file_type;
+                    }
+                }
+
+                time_t s = time(0);
+                srand(s);
+                DEBUG("kibosh_read(file->path=%s, size=%zd, offset=%" PRId64", uid=%"PRId32") "
+                              "= {\"mode\"=%d, \"fraction\"=%g, \"file_type\"=%s, \"rand_seed\"=%d}\n", file->path, size, (int64_t)offset, uid,
+                              fault, fraction, file_type, (int) s);
+                for (int i=0; i < ret; i++) {
+                    // we corrupt a fraction of bits
+                    if (RAND_FRAC <= fraction) {
+                        int b = 0;
+                        if (fault == READ_CORRUPT_RAND)
+                            b = (int) round(RAND_FRAC * 255.0);
+                        memset(buf+i, b, 1);
+                    }
+                }
+                return ret;
+            }
+
+            // inject unreadable fault
             if (fault) {
                 ret = -fault;
             }

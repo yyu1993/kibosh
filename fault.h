@@ -25,6 +25,18 @@
 #define KIBOSH_FAULT_TYPE_STR_LEN 32
 
 /**
+ * Mode constants for Kibosh read corrupt faults.
+ */
+#define READ_CORRUPT_BASE 1000
+#define READ_CORRUPT_ZERO 1000
+#define READ_CORRUPT_RAND 1001
+
+/**
+ * Generate a random double between 0 and 1.0
+ */
+#define RAND_FRAC ((double)rand()/(double)RAND_MAX)
+
+/**
  * Base class for Kibosh faults.
  */
 struct kibosh_fault_base {
@@ -48,6 +60,11 @@ struct kibosh_fault_base {
 * The type of kibosh_fault_unwritable.
 */
 #define KIBOSH_FAULT_TYPE_UNWRITABLE "unwritable"
+
+/**
+* The type of kibosh_fault_read_corrupt.
+*/
+#define KIBOSH_FAULT_TYPE_READ_CORRUPT "read_corrupt"
 
 /**
  * The class for Kibosh faults that make files unreadable.
@@ -112,6 +129,38 @@ struct kibosh_fault_unwritable {
     * The error code to return from write faults.
     */
     int code;
+};
+
+/**
+* The class for Kibosh faults that lead to corrupted data when reading.
+*/
+struct kibosh_fault_read_corrupt {
+    /**
+    * The base class members.
+    */
+    struct kibosh_fault_base base;
+
+    /**
+    * The path prefix.
+    */
+    char *prefix;
+
+    /**
+    * The type of file to be corrupted.
+    */
+    char *file_type;
+
+    /**
+     * Mode of data corruption.
+     * 1000 -> corrupt bits contain zeros
+     * 1001 -> corrupt bits contain random values
+     */
+    int mode;
+
+    /**
+     * The fraction of bits corrupted.
+     */
+    double fraction;
 };
 
 struct kibosh_faults {
