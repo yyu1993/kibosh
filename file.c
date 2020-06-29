@@ -241,11 +241,11 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
                     }
                 }
 
-                time_t s = time(0);
+                int s = (int) round(time(0)*RAND_FRAC);
                 srand(s);
                 DEBUG("kibosh_read(file->path=%s, size=%zd, offset=%" PRId64", uid=%"PRId32") "
                               "= {\"mode\"=%d, \"fraction\"=%g, \"file_type\"=%s, \"rand_seed\"=%d}\n", file->path, size, (int64_t)offset, uid,
-                              fault, fraction, file_type, (int) s);
+                              fault, fraction, file_type, s);
                 for (int i=0; i < ret; i++) {
                     // we corrupt a fraction of bits
                     if (RAND_FRAC <= fraction) {
