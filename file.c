@@ -35,7 +35,6 @@
 #include <sys/types.h>
 #include <sys/xattr.h>
 #include <unistd.h>
-#include <math.h>
 
 static struct kibosh_file *kibosh_file_alloc(enum kibosh_file_type type,
                                              const char *path)

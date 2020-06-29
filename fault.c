@@ -161,7 +161,7 @@ static int kibosh_fault_read_delay_check(struct kibosh_fault_read_delay *fault, 
         return 0;
     }
     // apply fraction
-    srand(time(0));
+    srand((int) round(time(0)*RAND_FRAC));
     if (RAND_FRAC <= fault->fraction)
         milli_sleep(fault->delay_ms);
     return 0;
