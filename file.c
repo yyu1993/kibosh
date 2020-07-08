@@ -374,13 +374,12 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
 
             int pos = (int) ((1.0 - fraction) * size);
             int buf_size = (int) size;
-            char *write_buf = buf;
 
             switch(fault) {
                 case CORRUPT_RAND:
                     for (int i=0; i < buf_size; ++i) {
                         if (RAND_FRAC <= fraction) {
-                            memset(write_buf+i, (int) round(RAND_FRAC * 255.0), 1);
+                            memset(buf+i, (int) round(RAND_FRAC * 255.0), 1);
                         }
                     }
                     break;
@@ -388,19 +387,19 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
                 case CORRUPT_ZERO:
                     for (int i=0; i < buf_size; ++i) {
                         if (RAND_FRAC <= fraction) {
-                            memset(write_buf+i, 0, 1);
+                            memset(buf+i, 0, 1);
                         }
                     }
                     break;
 
                 case CORRUPT_RAND_SEQ:
                     for (; pos < buf_size; ++pos) {
-                        memset(write_buf+pos, (int) round(RAND_FRAC * 255.0), 1);
+                        memset(buf+pos, (int) round(RAND_FRAC * 255.0), 1);
                     }
                     break;
 
                 case CORRUPT_ZERO_SEQ:
-                    memset(write_buf+pos, 0, buf_size - pos);
+                    memset(buf+pos, 0, buf_size - pos);
                     break;
 
                 case CORRUPT_DROP:
@@ -409,7 +408,7 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
 
                 // CORRUPT_ZERO
                 default:
-                    memset(write_buf+pos, 0, buf_size - pos);
+                    memset(buf+pos, 0, buf_size - pos);
             }
             ret = pwrite(file->fd, buf, size, offset);
             uid = fuse_get_context()->uid;
