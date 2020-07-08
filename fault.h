@@ -25,11 +25,13 @@
 #define KIBOSH_FAULT_TYPE_STR_LEN 32
 
 /**
- * Mode constants for Kibosh read corrupt faults.
+ * Constant flags for byte corruption modes.
  */
-#define READ_CORRUPT_BASE 1000
-#define READ_CORRUPT_ZERO 1000
-#define READ_CORRUPT_RAND 1001
+#define CORRUPT_ZERO 1000
+#define CORRUPT_RAND 1001
+#define CORRUPT_ZERO_SEQ 1100
+#define CORRUPT_RAND_SEQ 1101
+#define CORRUPT_DROP 1200
 
 /**
  * Generate a random double between 0 and 1.0
@@ -65,6 +67,11 @@ struct kibosh_fault_base {
 * The type of kibosh_fault_read_corrupt.
 */
 #define KIBOSH_FAULT_TYPE_READ_CORRUPT "read_corrupt"
+
+/**
+* The type of kibosh_fault_write_corrupt.
+*/
+#define KIBOSH_FAULT_TYPE_WRITE_CORRUPT "write_corrupt"
 
 /**
  * The class for Kibosh faults that make files unreadable.
@@ -151,14 +158,52 @@ struct kibosh_fault_read_corrupt {
     char *file_type;
 
     /**
-     * Mode of data corruption.
-     * 1000 -> corrupt bits contain zeros
-     * 1001 -> corrupt bits contain random values
+     * Mode of byte corruption.
+     * 1000 -> zeros (default)
+     * 1001 -> random values
+     * 1100 -> sequential zeros
+     * 1101 -> sequential random values
+     * 1200 -> drop a fraction of buffer
      */
     int mode;
 
     /**
-     * The fraction of bits corrupted.
+     * The fraction of bits corrupted. (Default = 0.5)
+     */
+    double fraction;
+};
+
+/**
+* The class for Kibosh faults that lead to corrupted data when writing.
+*/
+struct kibosh_fault_write_corrupt {
+    /**
+    * The base class members.
+    */
+    struct kibosh_fault_base base;
+
+    /**
+    * The path prefix.
+    */
+    char *prefix;
+
+    /**
+    * The type of file to be corrupted.
+    */
+    char *file_type;
+
+    /**
+     * Mode of byte corruption.
+     * 1000 -> zeros (default)
+     * 1001 -> random values
+     * 1100 -> sequential zeros
+     * 1101 -> sequential random values
+     * 1200 -> drop a fraction of buffer
+     */
+    int mode;
+
+    /**
+     * The fraction of bits corrupted. (Default = 0.5)
      */
     double fraction;
 };
