@@ -271,16 +271,16 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
                         break;
 
                     case CORRUPT_RAND_SEQ:
-                        for (pos; pos < buf_size; ++pos) {
+                        for (; pos < buf_size; ++pos) {
                             memset(buf+pos, (int) round(RAND_FRAC * 255.0), 1);
-                            }
+                        }
                         break;
 
                     case CORRUPT_ZERO_SEQ:
                         memset(buf+pos, 0, buf_size - pos);
                         break;
 
-                    case CORRUPT_NONE:
+                    case CORRUPT_DROP:
                         size = size - pos;
                         break;
 
@@ -377,7 +377,7 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
 
             switch(fault) {
                 case CORRUPT_RAND:
-                    for (int i=0; i < buf_size; i++) {
+                    for (int i=0; i < buf_size; ++i) {
                         if (RAND_FRAC <= fraction) {
                             memset(buf+i, (int) round(RAND_FRAC * 255.0), 1);
                         }
@@ -385,7 +385,7 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
                     break;
 
                 case CORRUPT_ZERO:
-                    for (int i=0; i < buf_size; i++) {
+                    for (int i=0; i < buf_size; ++i) {
                         if (RAND_FRAC <= fraction) {
                             memset(buf+i, 0, 1);
                         }
@@ -393,16 +393,16 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
                     break;
 
                 case CORRUPT_RAND_SEQ:
-                    for (pos; pos < buf_size; ++pos) {
+                    for (; pos < buf_size; ++pos) {
                         memset(buf+pos, (int) round(RAND_FRAC * 255.0), 1);
-                        }
+                    }
                     break;
 
                 case CORRUPT_ZERO_SEQ:
                     memset(buf+pos, 0, buf_size - pos);
                     break;
 
-                case CORRUPT_NONE:
+                case CORRUPT_DROP:
                     size = size - pos;
                     break;
 
@@ -413,8 +413,8 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
             ret = pwrite(file->fd, buf, size, offset);
             uid = fuse_get_context()->uid;
             DEBUG("kibosh_write_corrupt(file->path=%s, size=%zd, offset=%" PRId64", uid=%"PRId32") "
-                                      "= write_corrupt(file_type=%s, byte_mode=%d, pos_mode=%d)\n",
-                                      file->path, size, (int64_t)offset, uid, file_type, fault, pos_mode);
+                                      "= write_corrupt(file_type=%s, mode=%d)\n",
+                                      file->path, size, (int64_t)offset, uid, file_type, fault);
             return ret;
         }
 
