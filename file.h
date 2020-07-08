@@ -31,7 +31,7 @@ int kibosh_ftruncate(const char *path, off_t len, struct fuse_file_info *info);
 int kibosh_open(const char *path, struct fuse_file_info *info);
 int kibosh_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *info);
 int kibosh_release(const char *path, struct fuse_file_info *info);
-int kibosh_write(const char *path, const char *buf, size_t size, off_t offset, struct fuse_file_info *info);
+int kibosh_write(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *info);
 
 enum kibosh_file_type {
     /**
