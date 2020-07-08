@@ -347,7 +347,7 @@ int kibosh_release(const char *path UNUSED, struct fuse_file_info *info)
     return AS_FUSE_ERR(ret);
 }
 
-int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t offset,
+int kibosh_write(const char *path UNUSED, char *buf, size_t size, off_t offset,
                  struct fuse_file_info *info)
 {
     int ret, fault;
