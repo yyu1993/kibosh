@@ -323,7 +323,7 @@ static struct kibosh_fault_write_corrupt *kibosh_fault_write_corrupt_parse(json_
     struct kibosh_fault_write_corrupt *fault = NULL;
     json_value *mode_obj = NULL, *prefix_obj = NULL, *fraction_obj = NULL, *file_type_obj = NULL;
 
-    mode_obj = get_child(obj, "byte_mode");
+    mode_obj = get_child(obj, "mode");
     if ((!mode_obj) || (mode_obj->type != json_integer)) {
         INFO("kibosh_fault_write_corrupt_parse: No valid \"mode\" field found in fault object.\n");
         goto error;

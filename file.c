@@ -347,6 +347,8 @@ int kibosh_release(const char *path UNUSED, struct fuse_file_info *info)
     return AS_FUSE_ERR(ret);
 }
 
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wdiscarded-qualifiers\"")
 int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t offset,
                  struct fuse_file_info *info)
 {
@@ -440,6 +442,7 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
     // Our return code is consistent with the direct_io mount option.
     return ret;
 }
+_Pragma("GCC diagnostic pop")
 
 const char *kibosh_file_type_str(enum kibosh_file_type type)
 {
