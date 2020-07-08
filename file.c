@@ -238,7 +238,7 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
 
             // inject read_corrupt fault
             if (fault >= CORRUPT_ZERO) {
-                double fraction = 1.0;
+                double fraction = 0.5;
                 char *file_type = NULL;
                 struct kibosh_fault_base **iter;
                 struct kibosh_fault_read_corrupt *corrupt_fault;
@@ -251,7 +251,7 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
                 }
 
                 int pos = (int) ((1.0 - fraction) * size);
-                int buf_size = (int) size
+                int buf_size = (int) size;
 
                 switch(fault) {
                     case CORRUPT_RAND:
@@ -360,22 +360,20 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
 
         // need to inject write_corrupt
         if (fault >= CORRUPT_ZERO) {
-            double fraction = 1.0;
-            int pos_mode = 1;
+            double fraction = 0.5;
             char *file_type = NULL;
             struct kibosh_fault_base **iter;
             struct kibosh_fault_write_corrupt *corrupt_fault;
             for (iter = fs->faults->list; *iter; iter++) {
                 if (strcmp((*iter)->type, KIBOSH_FAULT_TYPE_WRITE_CORRUPT) == 0) {
-                    corrupt_fault = (struct kibosh_fault_read_corrupt*)(*iter);
+                    corrupt_fault = (struct kibosh_fault_write_corrupt*)(*iter);
                     fraction = corrupt_fault->fraction;
                     file_type = corrupt_fault->file_type;
-                    pos_mode = corrupt_fault->pos_mode;
                 }
             }
 
             int pos = (int) ((1.0 - fraction) * size);
-            int buf_size = (int) size
+            int buf_size = (int) size;
 
             switch(fault) {
                 case CORRUPT_RAND:
