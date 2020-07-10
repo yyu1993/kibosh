@@ -272,7 +272,7 @@ static struct kibosh_fault_read_corrupt *kibosh_fault_read_corrupt_parse(json_va
     }
     fraction_obj = get_child(obj, "fraction");
     if ((!fraction_obj) || (fraction_obj->type != json_double)) {
-        INFO("kibosh_fault_read_corrupt_parse: No valid \"fraction\" field found in fault object, will apply read_corrupt to all bits\n");
+        INFO("kibosh_fault_read_corrupt_parse: No valid \"fraction\" field found in fault object, will apply read_corrupt to all bytes\n");
         fault->fraction = 0.5;
     } else {
         fault->fraction = fraction_obj->u.dbl;
@@ -357,7 +357,7 @@ static struct kibosh_fault_write_corrupt *kibosh_fault_write_corrupt_parse(json_
     }
     fraction_obj = get_child(obj, "fraction");
     if ((!fraction_obj) || (fraction_obj->type != json_double)) {
-        INFO("kibosh_fault_read_corrupt_parse: No valid \"fraction\" field found in fault object, will apply read_corrupt to all bits\n");
+        INFO("kibosh_fault_read_corrupt_parse: No valid \"fraction\" field found in fault object, will apply read_corrupt to all bytes\n");
         fault->fraction = 0.5;
     } else {
         fault->fraction = fraction_obj->u.dbl;

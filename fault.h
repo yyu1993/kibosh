@@ -168,7 +168,7 @@ struct kibosh_fault_read_corrupt {
     int mode;
 
     /**
-     * The fraction of bits corrupted. (Default = 0.5)
+     * The fraction of bytes corrupted. (Default = 0.5)
      */
     double fraction;
 };
@@ -203,7 +203,7 @@ struct kibosh_fault_write_corrupt {
     int mode;
 
     /**
-     * The fraction of bits corrupted. (Default = 0.5)
+     * The fraction of bytes corrupted. (Default = 0.5)
      */
     double fraction;
 };

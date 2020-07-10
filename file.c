@@ -295,7 +295,7 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
                               "= {\"mode\"=%d, \"fraction\"=%g, \"file_type\"=%s, \"rand_seed\"=%d}\n", file->path, size, (int64_t)offset, uid,
                               fault, fraction, file_type, s);
                 for (int i=0; i < ret; i++) {
-                    // we corrupt a fraction of bits
+                    // we corrupt a fraction of bytes
                     if (RAND_FRAC <= fraction) {
                         int b = 0;
                         if (fault == CORRUPT_RAND)
