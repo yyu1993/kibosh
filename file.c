@@ -231,6 +231,15 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
     // TODO: mask EINTR?
     uid = fuse_get_context()->uid;
     ret = pread(file->fd, buf, size, offset);
+
+    // clear page cache
+    int sret = system("sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"");
+    if (sret) {
+        INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
+    } else {
+        INFO("kibosh_read: cleared page cache successful: %d.\n", sret);
+    }
+
     if (ret < 0) {
         ret = -errno;
     } else {
@@ -420,6 +429,14 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
                                       "= write_corrupt{mode=%d, fraction=%g, suffix=%s, ret=%d}\n",
                                       file->path, size, (int64_t)offset, uid, fault, fraction, suffix, ret);
 
+            // clear page cache
+            int sret = system("sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"");
+            if (sret) {
+                INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
+            } else {
+                INFO("kibosh_read: cleared page cache successful: %d.\n", sret);
+            }
+
             char buf_write[ret * 2 + 1];
             for (i=0; i<ret; ++i) {
                 sprintf(buf_write+i*2, "%02X", buf[i]);
@@ -446,6 +463,15 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
 
     uid = fuse_get_context()->uid;
     ret = pwrite(file->fd, buf, size, offset);
+
+    // clear page cache
+    int sret = system("sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"");
+    if (sret) {
+        INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
+    } else {
+        INFO("kibosh_read: cleared page cache successful: %d.\n", sret);
+    }
+
     if (ret < 0) {
         ret = -errno;
         DEBUG("kibosh_write(file->path=%s, size=%zd, offset=%" PRId64", uid=%"PRId32") "
