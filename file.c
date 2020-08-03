@@ -80,8 +80,6 @@ static int kibosh_open_normal_file_impl(const char *path, int flags,
         goto error;
     }
 
-    flags |= O_DIRECT;
-
     // Assume that FUSE has already taken care of the umask.
     snprintf(bpath, sizeof(bpath), "%s%s", fs->root, path);
     file->fd = open(bpath, flags, mode);
