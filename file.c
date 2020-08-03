@@ -241,7 +241,7 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
     ret = pread(file->fd, buf, size, offset);
 
     // clear page cache
-    int sret = system("sleep .5; sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\" &");
+    int sret = system("for i in {1..10}; do sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"; done &");
     if (sret) {
         INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
     } else {
