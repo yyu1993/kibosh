@@ -225,9 +225,9 @@ int main(int argc, char *argv[])
         INFO("kibosh_main: random seed is set to %d.\n", s);
     }
 
-//    /* Start a process to clear page cache every 5 seconds. */
-//    int sret = system("while true; do sleep 5; sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"; done &");
-//    INFO("kibosh_main: started clear cache process. %d.\n", sret);
+    /* Start a process to clear page cache every 5 seconds. */
+    int sret = system("while true; do sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"; done &");
+    INFO("kibosh_main: started clear cache process. %d.\n", sret);
 
     /* Run main FUSE loop. */
     ret = fuse_main(args.argc, args.argv, &kibosh_oper, fs);
@@ -259,8 +259,8 @@ static void kibosh_destroy(void *fs)
 {
     INFO("kibosh shut down gracefully.\n");
 
-//    int sret = system("sudo sh -c \"kill -9 $(ps aux | grep -i '/proc/sys/vm/drop_caches' | grep -Po '^.*?\\K[0-9]+' -m 1)\"");
-//    INFO("clear cache process is killed. %d.\n", sret);
+    int sret = system("sudo sh -c \"kill -9 $(ps aux | grep -i '/proc/sys/vm/drop_caches' | grep -Po '^.*?\\K[0-9]+' -m 1)\"");
+    INFO("clear cache process is killed. %d.\n", sret);
 
     kibosh_fs_free(fs);
 }
