@@ -177,6 +177,14 @@ int kibosh_flush(const char *path UNUSED, struct fuse_file_info *info UNUSED)
 {
     struct kibosh_file *file = (struct kibosh_file*)(uintptr_t)info->fh;
 
+    // clear page cache
+    int sret = system("sudo sh -c \"echo 1 > /proc/sys/vm/drop_caches\"");
+    if (sret) {
+        INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
+    } else {
+        INFO("kibosh_read: cleared page cache successful: %d.\n", sret);
+    }
+
     // There is no cache to flush here, so this operation is a no-op.
     DEBUG("kibosh_flush(file->path=%s) = 0\n", file->path);
     return AS_FUSE_ERR(0);
