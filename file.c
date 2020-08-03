@@ -178,7 +178,7 @@ int kibosh_flush(const char *path UNUSED, struct fuse_file_info *info UNUSED)
     struct kibosh_file *file = (struct kibosh_file*)(uintptr_t)info->fh;
 
     // clear page cache
-    int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\"");
+    int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" &");
     if (sret) {
         INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
     } else {
@@ -241,7 +241,7 @@ int kibosh_read(const char *path UNUSED, char *buf, size_t size, off_t offset,
     ret = pread(file->fd, buf, size, offset);
 
     // clear page cache
-    int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\"");
+    int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" &");
     if (sret) {
         INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
     } else {
@@ -438,7 +438,7 @@ int kibosh_write(const char *path UNUSED, const char *buf, size_t size, off_t of
                                       file->path, size, (int64_t)offset, uid, fault, fraction, suffix, ret);
 
             // clear page cache
-            int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\"");
+            int sret = system("sudo sh -c \"sync; echo 1 > /proc/sys/vm/drop_caches\" &");
             if (sret) {
                 INFO("kibosh_read: cleared page cache failed with code: %d.\n", sret);
             } else {
